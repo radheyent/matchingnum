@@ -438,6 +438,116 @@
     opacity: 1;
   }
 
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .check-btn {
+    flex: 1;
+    min-width: 180px;
+    background: transparent;
+    color: var(--vi-magenta);
+    border: 1.5px solid var(--vi-magenta);
+    border-radius: 12px;
+    padding: 13px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    white-space: nowrap;
+  }
+
+  .check-btn:hover {
+    background: rgba(224,0,144,0.12);
+    transform: translateY(-2px);
+  }
+
+  .check-btn:active { transform: translateY(0); }
+
+  /* CHECK MATCHING SECTION */
+  .check-section {
+    display: none;
+    background: var(--vi-card);
+    border: 1px solid var(--vi-border);
+    border-radius: 20px;
+    padding: 24px 24px 20px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .check-section.show { display: block; }
+
+  .check-header {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .check-subtext {
+    display: block;
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1px;
+    margin-top: 4px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .digit-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    margin-bottom: 6px;
+  }
+
+  .digit-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid var(--vi-border);
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .digit-btn:hover {
+    border-color: var(--vi-magenta);
+    background: rgba(224,0,144,0.1);
+    transform: translateY(-2px);
+  }
+
+  .digit-btn.selected {
+    border-color: var(--vi-yellow);
+    background: rgba(255,206,0,0.12);
+    color: var(--vi-yellow);
+    box-shadow: 0 0 16px rgba(255,206,0,0.2);
+    transform: translateY(-2px);
+  }
+
+  .check-result {
+    display: none;
+    margin-top: 20px;
+    border-top: 1px solid var(--vi-border);
+    padding-top: 18px;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .check-result.show { display: block; }
+
   /* FOOTER */
   .footer {
     text-align: center;
@@ -479,13 +589,32 @@
         maxlength="10"
         inputmode="numeric"
       />
+    </div>
+    <div class="btn-row">
       <button class="generate-btn" onclick="generateCards()">▶ Generate</button>
+      <button class="check-btn" onclick="checkMatching()">🔍 Check Matching on CPOS</button>
     </div>
     <div class="error-msg" id="errorMsg">⚠️ Please enter a valid 10-digit mobile number.</div>
     <div class="detected-info" id="detectedInfo">
       <span>Base Detected:</span>
       <span class="base-badge" id="baseDisplay">—</span>
       <span>→ Generating 10 options (0–9)</span>
+    </div>
+  </div>
+
+  <!-- CHECK MATCHING SECTION -->
+  <div class="check-section" id="checkSection">
+    <div class="check-header">
+      🔍 Select the digit available on CPOS
+      <span class="check-subtext" id="checkSubtext"></span>
+    </div>
+    <div class="digit-buttons" id="digitButtons"></div>
+    <div class="check-result" id="checkResult">
+      <div class="copy-section-header">
+        <span class="copy-section-title">📋 All Matching Numbers for Selected Digit</span>
+        <button class="copy-all-btn" onclick="copyCheckNumbers()">📋 Copy All Numbers</button>
+      </div>
+      <textarea class="all-numbers-box" id="checkNumbersBox" readonly></textarea>
     </div>
   </div>
 
@@ -654,6 +783,97 @@
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+  var _checkInput = '';
+  var _selectedPos = -1;
+
+  function checkMatching() {
+    var input = document.getElementById('availableNum').value.trim();
+    var errorMsg = document.getElementById('errorMsg');
+    errorMsg.classList.remove('show');
+
+    if (!/^\d{10}$/.test(input)) {
+      errorMsg.classList.add('show');
+      return;
+    }
+
+    _checkInput = input;
+    _selectedPos = -1;
+
+    document.getElementById('checkSubtext').textContent =
+      'Entered: ' + input.slice(0,5) + ' ' + input.slice(5) + '  |  Click any digit position to see options';
+
+    var container = document.getElementById('digitButtons');
+    container.innerHTML = '';
+
+    for (var i = 0; i < 10; i++) {
+      var btn = document.createElement('button');
+      btn.className = 'digit-btn';
+      btn.textContent = input[i];
+      btn.id = 'pos-btn-' + i;
+      btn.onclick = (function(pos) {
+        return function() { selectDigit(pos); };
+      })(i);
+      container.appendChild(btn);
+    }
+
+    document.getElementById('checkResult').classList.remove('show');
+    document.getElementById('checkNumbersBox').value = '';
+    document.getElementById('checkSection').classList.add('show');
+    setTimeout(function() {
+      document.getElementById('checkSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
+  function selectDigit(pos) {
+    // Deselect if already selected (toggle off)
+    if (_selectedPos === pos) {
+      _selectedPos = -1;
+      document.getElementById('pos-btn-' + pos).classList.remove('selected');
+      document.getElementById('checkResult').classList.remove('show');
+      document.getElementById('checkNumbersBox').value = '';
+      return;
+    }
+
+    // Remove highlight from previously selected
+    if (_selectedPos !== -1) {
+      var prev = document.getElementById('pos-btn-' + _selectedPos);
+      if (prev) prev.classList.remove('selected');
+    }
+    _selectedPos = pos;
+    document.getElementById('pos-btn-' + pos).classList.add('selected');
+
+    // Build all 10 variants: replace digit at position `pos` with 0-9
+    var prefix = _checkInput.slice(0, pos);
+    var suffix = _checkInput.slice(pos + 1);
+    var numbers = [];
+    for (var d = 0; d <= 9; d++) {
+      var candidate = prefix + d + suffix;
+      // Only valid Indian mobile numbers (start with 6,7,8,9)
+      if (parseInt(candidate[0]) >= 6) {
+        numbers.push(candidate);
+      }
+    }
+
+    document.getElementById('checkNumbersBox').value = numbers.join('\n');
+    var result = document.getElementById('checkResult');
+    result.classList.add('show');
+    setTimeout(function() {
+      result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+
+  function copyCheckNumbers() {
+    const box = document.getElementById('checkNumbersBox');
+    if (!box.value) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(box.value).then(function() {
+        showToast('✅ Numbers Copied!');
+      }).catch(function() { fallbackCopy(box); });
+    } else {
+      fallbackCopy(box);
+    }
   }
 
   document.getElementById('availableNum').addEventListener('keydown', function(e) {
