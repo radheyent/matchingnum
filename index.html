@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vi Premium Number Matcher</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
     --vi-purple: #6B2D8B;
@@ -25,14 +25,11 @@
     overflow-x: hidden;
   }
 
-  /* Animated background */
   body::before {
     content: '';
     position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
     background: radial-gradient(ellipse at 30% 20%, rgba(107,45,139,0.15) 0%, transparent 50%),
                 radial-gradient(ellipse at 70% 80%, rgba(224,0,144,0.1) 0%, transparent 50%);
     animation: bgShift 8s ease-in-out infinite alternate;
@@ -42,7 +39,7 @@
 
   @keyframes bgShift {
     0% { transform: translate(0,0) rotate(0deg); }
-    100% { transform: translate(20px, 10px) rotate(1deg); }
+    100% { transform: translate(20px,10px) rotate(1deg); }
   }
 
   .container {
@@ -62,7 +59,7 @@
 
   @keyframes fadeDown {
     from { opacity:0; transform: translateY(-20px); }
-    to { opacity:1; transform: translateY(0); }
+    to   { opacity:1; transform: translateY(0); }
   }
 
   .vi-logo {
@@ -84,8 +81,7 @@
   }
 
   .vi-dot {
-    width: 10px;
-    height: 10px;
+    width: 10px; height: 10px;
     background: var(--vi-yellow);
     border-radius: 50%;
     animation: pulse 1.5s ease-in-out infinite;
@@ -93,7 +89,7 @@
 
   @keyframes pulse {
     0%,100% { transform: scale(1); opacity:1; }
-    50% { transform: scale(1.4); opacity:0.7; }
+    50%      { transform: scale(1.4); opacity:0.7; }
   }
 
   .header h1 {
@@ -131,7 +127,7 @@
 
   @keyframes fadeUp {
     from { opacity:0; transform: translateY(24px); }
-    to { opacity:1; transform: translateY(0); }
+    to   { opacity:1; transform: translateY(0); }
   }
 
   .input-label {
@@ -144,14 +140,16 @@
     display: block;
   }
 
+  /* FIX: align button and input properly */
   .input-row {
     display: flex;
     gap: 12px;
-    align-items: stretch;
+    align-items: center;
   }
 
   .num-input {
     flex: 1;
+    min-width: 0;
     background: rgba(255,255,255,0.04);
     border: 1.5px solid var(--vi-border);
     border-radius: 12px;
@@ -172,6 +170,7 @@
   }
 
   .generate-btn {
+    flex-shrink: 0;
     background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta));
     color: #fff;
     border: none;
@@ -217,12 +216,21 @@
     letter-spacing: 2px;
   }
 
-  /* RESULTS */
-  .results-section {
+  .error-msg {
     display: none;
-    animation: fadeUp 0.4s ease both;
+    color: #ff6b6b;
+    font-size: 13px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: rgba(255,107,107,0.08);
+    border-radius: 8px;
+    border-left: 3px solid #ff6b6b;
   }
 
+  .error-msg.show { display: block; }
+
+  /* RESULTS */
+  .results-section { display: none; animation: fadeUp 0.4s ease both; }
   .results-section.show { display: block; }
 
   .results-header {
@@ -244,6 +252,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 12px;
+    margin-bottom: 20px;
   }
 
   /* NUMBER CARD */
@@ -263,7 +272,7 @@
 
   @keyframes cardIn {
     from { opacity:0; transform: scale(0.96) translateY(8px); }
-    to { opacity:1; transform: scale(1) translateY(0); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
   }
 
   .num-card:hover {
@@ -272,11 +281,7 @@
     box-shadow: 0 8px 28px rgba(224,0,144,0.2);
   }
 
-  .num-display {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
+  .num-display { display: flex; flex-direction: column; gap: 3px; }
 
   .num-val {
     font-family: 'Share Tech Mono', monospace;
@@ -285,16 +290,9 @@
     letter-spacing: 2px;
   }
 
-  .num-val .last-digit {
-    color: var(--vi-yellow);
-    font-weight: 700;
-  }
+  .num-val .last-digit { color: var(--vi-yellow); font-weight: 700; }
 
-  .num-suffix {
-    font-size: 11px;
-    color: rgba(255,255,255,0.35);
-    letter-spacing: 1px;
-  }
+  .num-suffix { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
 
   .wa-btn {
     display: inline-flex;
@@ -321,21 +319,95 @@
     box-shadow: 0 5px 18px rgba(37,211,102,0.45);
   }
 
-  .wa-icon { font-size: 16px; }
-
-  /* ERROR */
-  .error-msg {
-    display: none;
-    color: #ff6b6b;
-    font-size: 13px;
-    margin-top: 10px;
-    padding: 8px 14px;
-    background: rgba(255,107,107,0.08);
-    border-radius: 8px;
-    border-left: 3px solid #ff6b6b;
+  /* COPY ALL SECTION */
+  .copy-section {
+    background: var(--vi-card);
+    border: 1px solid var(--vi-border);
+    border-radius: 20px;
+    padding: 22px 24px;
+    margin-top: 8px;
   }
 
-  .error-msg.show { display: block; }
+  .copy-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .copy-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--vi-magenta);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .copy-all-btn {
+    background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px var(--vi-glow);
+  }
+
+  .copy-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px var(--vi-glow);
+  }
+
+  .copy-all-btn:active { transform: scale(0.97); }
+
+  .all-numbers-box {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid var(--vi-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: 2px;
+    line-height: 2;
+    resize: none;
+    outline: none;
+    min-height: 100px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta));
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: transform 0.3s, opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 999;
+    box-shadow: 0 8px 30px var(--vi-glow);
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
 
   /* FOOTER */
   .footer {
@@ -346,7 +418,6 @@
     letter-spacing: 0.5px;
   }
 
-  /* Scrollbar */
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--vi-dark); }
   ::-webkit-scrollbar-thumb { background: var(--vi-purple); border-radius: 10px; }
@@ -392,13 +463,24 @@
   <!-- RESULTS -->
   <div class="results-section" id="resultsSection">
     <div class="results-header">
-      Send Outreach To → <span id="countLabel">10</span> Matching Customers
+      Send Outreach To → <span id="countLabel">9</span> Matching Customers
     </div>
     <div class="results-grid" id="resultsGrid"></div>
+
+    <!-- COPY ALL NUMBERS BOX -->
+    <div class="copy-section">
+      <div class="copy-section-header">
+        <span class="copy-section-title">📋 All Customer Numbers (Except Available)</span>
+        <button class="copy-all-btn" onclick="copyAllNumbers()">📋 Copy All Numbers</button>
+      </div>
+      <textarea class="all-numbers-box" id="allNumbersBox" readonly></textarea>
+    </div>
   </div>
 
   <div class="footer">Vi Premium Number Outreach Tool &nbsp;|&nbsp; Internal Use Only</div>
 </div>
+
+<div class="toast" id="toast">✅ Numbers Copied!</div>
 
 <script>
   function generateCards() {
@@ -410,7 +492,6 @@
 
     errorMsg.classList.remove('show');
 
-    // Validate
     if (!/^\d{10}$/.test(input)) {
       errorMsg.classList.add('show');
       resultsSection.classList.remove('show');
@@ -418,83 +499,114 @@
       return;
     }
 
-    const base = input.slice(0, 9); // First 9 digits
+    const base = input.slice(0, 9);
     const lastDigit = parseInt(input.slice(9));
 
-    // Show detected base
     document.getElementById('baseDisplay').textContent = base + 'X';
     detectedInfo.classList.add('show');
 
-    // Build cards
     grid.innerHTML = '';
+    const customerNumbers = [];
+
     for (let d = 0; d <= 9; d++) {
       const targetNum = base + d;
       const isAvailable = (d === lastDigit);
 
-      // Format number for display: XXXXX XXXXX
-      const formatted = targetNum.slice(0,5) + ' ' + targetNum.slice(5,9) + '<span class="last-digit">' + targetNum[9] + '</span>';
+      const formatted =
+        targetNum.slice(0, 5) + ' ' +
+        targetNum.slice(5, 9) +
+        '<span class="last-digit">' + targetNum[9] + '</span>';
 
-      // WhatsApp message (English + Hindi)
       const msg = buildMessage(targetNum, input);
-      const waLink = `https://wa.me/91${targetNum}?text=${encodeURIComponent(msg)}`;
+      const waLink = 'https://wa.me/91' + targetNum + '?text=' + encodeURIComponent(msg);
 
       const card = document.createElement('div');
       card.className = 'num-card';
       card.style.animationDelay = (d * 0.04) + 's';
+
       if (isAvailable) {
         card.style.borderColor = 'rgba(255,206,0,0.5)';
         card.style.background = 'rgba(255,206,0,0.05)';
       }
 
-      card.innerHTML = `
-        <div class="num-display">
-          <div class="num-val">${formatted}</div>
-          <div class="num-suffix">${isAvailable ? '⭐ Available (CPOS)' : 'Customer Number'}</div>
-        </div>
-        <a class="wa-btn" href="${waLink}" target="_blank">
-          <span class="wa-icon">💬</span> Send
-        </a>
-      `;
+      card.innerHTML =
+        '<div class="num-display">' +
+          '<div class="num-val">' + formatted + '</div>' +
+          '<div class="num-suffix">' + (isAvailable ? '⭐ Available (CPOS)' : '👤 Customer Number') + '</div>' +
+        '</div>' +
+        '<a class="wa-btn" href="' + waLink + '" target="_blank">' +
+          '<span style="font-size:16px">💬</span> Send' +
+        '</a>';
+
       grid.appendChild(card);
+
+      if (!isAvailable) {
+        customerNumbers.push(targetNum);
+      }
     }
 
+    document.getElementById('countLabel').textContent = customerNumbers.length;
+    document.getElementById('allNumbersBox').value = customerNumbers.join('\n');
+
     resultsSection.classList.add('show');
-    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => {
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 
   function buildMessage(customerNum, availableNum) {
-    const eng = `Namaskar Sir / Mam 🙏
-
-You are using Your Premium Number and Vi brings You a Similar Premium Number just for You at *ZERO* price. Find out the details below:
-
-----------------------------
-Your Number: *${customerNum}*
-Matching Number: *${availableNum}*
-----------------------------
-It's a Limited Time Offer.
-Don't lose this Opportunity — Grab it Now!
-Just Reply *"Yes"* — Rest we will handle.
-
-
-    const hin = `
----------------------
-
-आप एक प्रीमियम नंबर use कर रहे हैं और Vi आपको बिल्कुल मिलता-जुलता नंबर *FREE* दे रहा है।
-----------------------------
-आपका नंबर: *${customerNum}*
-मैचिंग नंबर: *${availableNum}*
-----------------------------
-
-सीमित समय का ऑफर है, मौका मत चूकिए!
-बस *"Yes"* Reply करें — बाकी हम संभाल लेंगे।
-
-📞 Call/WhatsApp: 8377919293
-👉 https://wa.me/8377919293?text=Yes`;
-
-    return eng + hin;
+    return "🙏 Namaskar Sir/Mam!\n\n" +
+      "Aap ek *Premium Vi Number* use kar rahe hain! 🌟\n" +
+      "Vi aapke liye ek ekdum milta-julta Premium Number *ZERO price* par leke aaya hai!\n\n" +
+      "✨ *Special Offer Details* ✨\n" +
+      "━━━━━━━━━━━━━━━━━━━━\n" +
+      "📱 Aapka Number: *" + customerNum + "*\n" +
+      "🎯 Matching Number: *" + availableNum + "*\n" +
+      "━━━━━━━━━━━━━━━━━━━━\n\n" +
+      "⏳ *Limited Time Offer* — Zyada wait mat kariye!\n" +
+      "💥 Yeh mauka sirf aapke liye hai!\n\n" +
+      "Sirf *\"Yes\"* likhke reply karein — baaki sab hum handle kar lenge! 😊\n\n" +
+      "━━━━━━━━━━━━━━━━━━━━\n\n" +
+      "🎉 *आपका खास ऑफर!* 🎉\n\n" +
+      "आप एक Vi Premium Number use कर रहे हैं! 💫\n" +
+      "Vi आपको बिल्कुल मिलता-जुलता नंबर *FREE* दे रहा है!\n\n" +
+      "📱 आपका नंबर: *" + customerNum + "*\n" +
+      "🎯 मैचिंग नंबर: *" + availableNum + "*\n\n" +
+      "⚡ सीमित समय का ऑफर — जल्दी करें!\n" +
+      "🔥 यह मौका सिर्फ आपके लिए है!\n\n" +
+      "बस *\"Yes\"* Reply करें — बाकी हम संभाल लेंगे! 🤝\n\n" +
+      "📞 Call/WhatsApp: 8377919293\n" +
+      "👉 https://wa.me/8377919293?text=Yes";
   }
 
-  // Allow Enter key
+  function copyAllNumbers() {
+    const box = document.getElementById('allNumbersBox');
+    if (!box.value) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(box.value).then(function() {
+        showToast('✅ Numbers Copied!');
+      }).catch(function() {
+        fallbackCopy(box);
+      });
+    } else {
+      fallbackCopy(box);
+    }
+  }
+
+  function fallbackCopy(el) {
+    el.select();
+    el.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    showToast('✅ Numbers Copied!');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
   document.getElementById('availableNum').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') generateCards();
   });
