@@ -383,6 +383,35 @@
     min-height: 100px;
   }
 
+  /* SENT STATE */
+  .num-card.sent {
+    border-color: rgba(37,211,102,0.6) !important;
+    background: rgba(37,211,102,0.07) !important;
+    opacity: 0.75;
+  }
+
+  .wa-btn.sent-btn {
+    background: #1a9e4e;
+    pointer-events: none;
+    cursor: default;
+    box-shadow: none;
+    transform: none !important;
+  }
+
+  .sent-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #25D366;
+    background: rgba(37,211,102,0.12);
+    border: 1px solid rgba(37,211,102,0.35);
+    border-radius: 5px;
+    padding: 2px 7px;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
   /* TOAST */
   .toast {
     position: fixed;
@@ -463,14 +492,14 @@
   <!-- RESULTS -->
   <div class="results-section" id="resultsSection">
     <div class="results-header">
-      Send Outreach To → <span id="countLabel">9</span> Matching Customers
+      Send Outreach To → <span id="countLabel">10</span> Matching Customers
     </div>
     <div class="results-grid" id="resultsGrid"></div>
 
     <!-- COPY ALL NUMBERS BOX -->
     <div class="copy-section">
       <div class="copy-section-header">
-        <span class="copy-section-title">📋 All Customer Numbers (Except Available)</span>
+        <span class="copy-section-title">📋 All 10 Numbers (Including Available)</span>
         <button class="copy-all-btn" onclick="copyAllNumbers()">📋 Copy All Numbers</button>
       </div>
       <textarea class="all-numbers-box" id="allNumbersBox" readonly></textarea>
@@ -529,20 +558,40 @@
         card.style.background = 'rgba(255,206,0,0.05)';
       }
 
+      const cardId = 'card-' + d;
+      card.id = cardId;
+
       card.innerHTML =
         '<div class="num-display">' +
           '<div class="num-val">' + formatted + '</div>' +
-          '<div class="num-suffix">' + (isAvailable ? '⭐ Available (CPOS)' : '👤 Customer Number') + '</div>' +
+          '<div class="num-suffix" id="suffix-' + d + '">' + (isAvailable ? '⭐ Available (CPOS)' : '👤 Customer Number') + '</div>' +
         '</div>' +
-        '<a class="wa-btn" href="' + waLink + '" target="_blank">' +
+        '<a class="wa-btn" id="wabtn-' + d + '" href="' + waLink + '" target="_blank">' +
           '<span style="font-size:16px">💬</span> Send' +
         '</a>';
 
       grid.appendChild(card);
 
-      if (!isAvailable) {
-        customerNumbers.push(targetNum);
-      }
+      (function(idx) {
+        document.getElementById('wabtn-' + idx).addEventListener('click', function() {
+          setTimeout(function() {
+            var c = document.getElementById('card-' + idx);
+            var btn = document.getElementById('wabtn-' + idx);
+            var suffix = document.getElementById('suffix-' + idx);
+            c.classList.add('sent');
+            btn.classList.add('sent-btn');
+            btn.innerHTML = '<span style="font-size:16px">✅</span> Sent';
+            if (!suffix.querySelector('.sent-badge')) {
+              var badge = document.createElement('span');
+              badge.className = 'sent-badge';
+              badge.textContent = '✔ Sent';
+              suffix.appendChild(badge);
+            }
+          }, 800);
+        });
+      })(d);
+
+      customerNumbers.push(targetNum);
     }
 
     document.getElementById('countLabel').textContent = customerNumbers.length;
