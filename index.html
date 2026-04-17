@@ -111,6 +111,13 @@
   .digit-btn.selected { border-color: var(--vi-yellow); background: rgba(255,206,0,0.12); color: var(--vi-yellow); box-shadow: 0 0 16px rgba(255,206,0,0.2); transform: translateY(-2px); }
   .check-result { display: none; margin-top: 20px; border-top: 1px solid var(--vi-border); padding-top: 18px; animation: fadeUp 0.3s ease both; }
   .check-result.show { display: block; }
+  .check-outreach-header {
+    font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.55);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin: 22px 0 14px; padding-top: 18px;
+    border-top: 1px solid var(--vi-border);
+  }
+  .check-outreach-header span { color: var(--vi-yellow); font-family: 'Share Tech Mono', monospace; }
   .footer { text-align: center; margin-top: 50px; color: rgba(255,255,255,0.2); font-size: 13px; letter-spacing: 0.5px; }
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--vi-dark); }
@@ -162,6 +169,12 @@
         <button class="copy-all-btn" onclick="copyCheckNumbers()">📋 Copy All Numbers</button>
       </div>
       <textarea class="all-numbers-box" id="checkNumbersBox" readonly></textarea>
+
+      <!-- OUTREACH CARDS for Check Matching -->
+      <div class="check-outreach-header">
+        📤 Send Outreach To → <span id="checkCountLabel">0</span> Matching Numbers
+      </div>
+      <div class="results-grid" id="checkResultsGrid"></div>
     </div>
   </div>
 
@@ -377,6 +390,7 @@
       document.getElementById('pos-btn-' + pos).classList.remove('selected');
       document.getElementById('checkResult').classList.remove('show');
       document.getElementById('checkNumbersBox').value = '';
+      document.getElementById('checkResultsGrid').innerHTML = '';
       return;
     }
     if (_selectedPos !== -1) {
@@ -395,11 +409,109 @@
     }
 
     document.getElementById('checkNumbersBox').value = numbers.join('\n');
+    document.getElementById('checkCountLabel').textContent = numbers.length;
+    buildCheckCards(numbers, pos);
+
     var result = document.getElementById('checkResult');
     result.classList.add('show');
     setTimeout(function() {
       result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
+  }
+
+  function buildCheckCards(numbers, selectedPos) {
+    var grid = document.getElementById('checkResultsGrid');
+    grid.innerHTML = '';
+
+    numbers.forEach(function(num, idx) {
+      var isAvailable = (num === _checkInput);
+
+      // Highlight the changed digit
+      var formatted = '';
+      for (var i = 0; i < 10; i++) {
+        if (i === selectedPos) {
+          formatted += '<span class="last-digit">' + num[i] + '</span>';
+        } else {
+          formatted += num[i];
+        }
+        if (i === 4) formatted += ' ';
+      }
+
+      var msg = buildMessage(num, _checkInput);
+      var waLink = 'https://wa.me/91' + num + '?text=' + encodeURIComponent(msg);
+      var rcsLink = 'sms:+91' + num + '?body=' + encodeURIComponent(msg);
+
+      var cardId = 'chk-card-' + idx;
+      var waBtnId = 'chk-wabtn-' + idx;
+      var rcsBtnId = 'chk-rcsbtn-' + idx;
+      var suffixId = 'chk-suffix-' + idx;
+
+      var card = document.createElement('div');
+      card.className = 'num-card';
+      card.id = cardId;
+      card.style.animationDelay = (idx * 0.04) + 's';
+
+      if (isAvailable) {
+        card.style.borderColor = 'rgba(255,206,0,0.5)';
+        card.style.background = 'rgba(255,206,0,0.05)';
+      }
+
+      card.innerHTML =
+        '<div class="num-display">' +
+          '<div class="num-val">' + formatted + '</div>' +
+          '<div class="num-suffix" id="' + suffixId + '">' +
+            (isAvailable ? '⭐ Available (CPOS)' : '👤 Customer Number') +
+          '</div>' +
+        '</div>' +
+        '<div class="btn-group">' +
+          '<a class="wa-btn" id="' + waBtnId + '" href="' + waLink + '" target="_blank" title="Send via WhatsApp">' +
+            '<span style="font-size:15px">💬</span> WA' +
+          '</a>' +
+          '<a class="rcs-btn" id="' + rcsBtnId + '" href="' + rcsLink + '" title="Send via RCS/SMS">' +
+            '<span style="font-size:15px">✉️</span> RCS' +
+          '</a>' +
+        '</div>';
+
+      grid.appendChild(card);
+
+      (function(i, wId, rId, sId) {
+        document.getElementById(wId).addEventListener('click', function() {
+          setTimeout(function() {
+            var btn = document.getElementById(wId);
+            if (!btn) return;
+            btn.classList.add('sent-btn');
+            btn.innerHTML = '<span style="font-size:15px">✅</span> Sent';
+            var suffix = document.getElementById(sId);
+            if (suffix && !suffix.querySelector('.wa-sent-badge')) {
+              var badge = document.createElement('span');
+              badge.className = 'sent-badge wa-sent-badge';
+              badge.textContent = '✔ WA Sent';
+              suffix.appendChild(badge);
+            }
+          }, 800);
+        });
+
+        document.getElementById(rId).addEventListener('click', function() {
+          setTimeout(function() {
+            var btn = document.getElementById(rId);
+            if (!btn) return;
+            btn.classList.add('sent-btn');
+            btn.innerHTML = '<span style="font-size:15px">✅</span> Sent';
+            var suffix = document.getElementById(sId);
+            if (suffix && !suffix.querySelector('.rcs-sent-badge')) {
+              var badge = document.createElement('span');
+              badge.className = 'sent-badge rcs-sent-badge';
+              badge.style.color = '#1A73E8';
+              badge.style.background = 'rgba(26,115,232,0.1)';
+              badge.style.borderColor = 'rgba(26,115,232,0.35)';
+              badge.style.marginLeft = '4px';
+              badge.textContent = '✔ RCS Sent';
+              suffix.appendChild(badge);
+            }
+          }, 800);
+        });
+      })(idx, waBtnId, rcsBtnId, suffixId);
+    });
   }
 
   function copyCheckNumbers() {
