@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vi Premium Number Matcher</title>
+<title>Vi Premium Number Matcher - Bulk Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -26,7 +26,8 @@
     animation: bgShift 8s ease-in-out infinite alternate; pointer-events: none; z-index: 0;
   }
   @keyframes bgShift { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(20px,10px) rotate(1deg); } }
-  .container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+  .container { position: relative; z-index: 1; max-width: 950px; margin: 0 auto; padding: 24px 16px 60px; }
+  
   .header { text-align: center; margin-bottom: 36px; animation: fadeDown 0.6s ease both; }
   @keyframes fadeDown { from { opacity:0; transform: translateY(-20px); } to { opacity:1; transform: translateY(0); } }
   .vi-logo { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); padding: 6px 22px 6px 14px; border-radius: 40px; margin-bottom: 18px; box-shadow: 0 0 30px var(--vi-glow); }
@@ -36,97 +37,71 @@
   .header h1 { font-size: clamp(22px, 4vw, 34px); font-weight: 700; color: #fff; letter-spacing: 1px; line-height: 1.2; }
   .header h1 span { background: linear-gradient(90deg, var(--vi-magenta), var(--vi-yellow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .header p { color: rgba(255,255,255,0.5); font-size: 15px; margin-top: 8px; letter-spacing: 0.5px; }
-  .input-card { background: var(--vi-card); border: 1px solid var(--vi-border); border-radius: 20px; padding: 28px 28px 24px; margin-bottom: 28px; animation: fadeUp 0.6s 0.2s ease both; box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
+
+  /* NAVIGATION TABS */
+  .nav-tabs { display: flex; gap: 10px; margin-bottom: 24px; justify-content: center; }
+  .tab-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--vi-border); color: #fff; padding: 12px 24px; border-radius: 12px; font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; flex: 1; max-width: 250px; }
+  .tab-btn.active { background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); border-color: transparent; box-shadow: 0 4px 15px var(--vi-glow); }
+
+  .workflow-section { display: none; animation: fadeUp 0.4s ease both; }
+  .workflow-section.active { display: block; }
   @keyframes fadeUp { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform: translateY(0); } }
-  .input-label { font-size: 13px; font-weight: 600; color: var(--vi-magenta); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
-  .input-row { display: flex; gap: 12px; align-items: center; }
-  .num-input { flex: 1; min-width: 0; background: rgba(255,255,255,0.04); border: 1.5px solid var(--vi-border); border-radius: 12px; padding: 14px 18px; font-family: 'Share Tech Mono', monospace; font-size: 22px; color: #fff; letter-spacing: 3px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-  .num-input::placeholder { color: rgba(255,255,255,0.2); letter-spacing: 2px; }
+
+  /* CARDS AND INPUTS */
+  .card-box { background: var(--vi-card); border: 1px solid var(--vi-border); border-radius: 20px; padding: 28px; margin-bottom: 28px; box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
+  .input-label { font-size: 13px; font-weight: 600; color: var(--vi-magenta); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  
+  .num-input { width: 100%; background: rgba(255,255,255,0.04); border: 1.5px solid var(--vi-border); border-radius: 12px; padding: 14px 18px; font-family: 'Share Tech Mono', monospace; font-size: 22px; color: #fff; letter-spacing: 3px; outline: none; transition: 0.2s; margin-bottom: 15px; }
   .num-input:focus { border-color: var(--vi-magenta); box-shadow: 0 0 0 3px rgba(224,0,144,0.15); }
-  .generate-btn { flex-shrink: 0; background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); color: #fff; border: none; border-radius: 12px; padding: 14px 26px; font-family: 'Rajdhani', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; white-space: nowrap; box-shadow: 0 4px 20px var(--vi-glow); }
-  .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--vi-glow); }
-  .generate-btn:active { transform: translateY(0); }
-  .detected-info { margin-top: 14px; display: none; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; letter-spacing: 0.5px; }
-  .detected-info.show { display: flex; }
-  .base-badge { background: rgba(107,45,139,0.3); border: 1px solid var(--vi-purple); color: var(--vi-yellow); font-family: 'Share Tech Mono', monospace; font-size: 15px; padding: 3px 12px; border-radius: 6px; letter-spacing: 2px; }
-  .error-msg { display: none; color: #ff6b6b; font-size: 13px; margin-top: 10px; padding: 8px 14px; background: rgba(255,107,107,0.08); border-radius: 8px; border-left: 3px solid #ff6b6b; }
-  .error-msg.show { display: block; }
-  .results-section { display: none; animation: fadeUp 0.4s ease both; }
-  .results-section.show { display: block; }
-  .results-header { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; padding-left: 4px; }
-  .results-header span { color: var(--vi-yellow); font-family: 'Share Tech Mono', monospace; }
-  .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .num-card { background: var(--vi-card); border: 1px solid var(--vi-border); border-radius: 16px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; animation: cardIn 0.3s ease both; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+
+  .bulk-textarea { width: 100%; height: 180px; background: rgba(255,255,255,0.04); border: 1.5px solid var(--vi-border); border-radius: 12px; padding: 14px 18px; font-family: 'Share Tech Mono', monospace; font-size: 16px; color: #fff; letter-spacing: 1px; line-height: 1.6; outline: none; transition: 0.2s; resize: none; margin-bottom: 15px; }
+  .bulk-textarea:focus { border-color: var(--vi-magenta); }
+
+  .primary-btn { width: 100%; background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); color: #fff; border: none; border-radius: 12px; padding: 15px; font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 20px var(--vi-glow); }
+  .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--vi-glow); }
+  .outline-btn { width: 100%; background: transparent; color: var(--vi-magenta); border: 1.5px solid var(--vi-magenta); border-radius: 12px; padding: 15px; font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+  .outline-btn:hover { background: rgba(224,0,144,0.08); }
+
+  /* RESULTS GRID */
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-top: 20px; }
+  .num-card { background: var(--vi-card); border: 1px solid var(--vi-border); border-radius: 16px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: 0.2s; animation: cardIn 0.3s ease both; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
   @keyframes cardIn { from { opacity:0; transform: scale(0.96) translateY(8px); } to { opacity:1; transform: scale(1) translateY(0); } }
-  .num-card:hover { border-color: var(--vi-magenta); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(224,0,144,0.2); }
-  .num-display { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
-  .num-val { font-family: 'Share Tech Mono', monospace; font-size: 19px; color: #fff; letter-spacing: 2px; }
-  .num-val .last-digit { color: var(--vi-yellow); font-weight: 700; }
-  .num-suffix { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
-  .btn-group { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
-  .wa-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: #25D366; color: #fff; text-decoration: none;
-    padding: 9px 14px; border-radius: 10px;
-    font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
-    white-space: nowrap; transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
-    flex-shrink: 0; box-shadow: 0 3px 12px rgba(37,211,102,0.3);
-    border: none; cursor: pointer;
+  .num-card:hover { border-color: var(--vi-magenta); transform: translateY(-3px); }
+  
+  .num-display { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .num-val { font-family: 'Share Tech Mono', monospace; font-size: 19px; color: #fff; letter-spacing: 1px; }
+  .match-val { font-size: 12px; color: var(--vi-yellow); font-family: 'Rajdhani', sans-serif; font-weight: 600; text-transform: uppercase; margin-top: 2px;}
+  .last-digit { color: var(--vi-yellow); font-weight: 700; text-decoration: underline; }
+
+  .btn-group { display: flex; gap: 6px; flex-shrink: 0; }
+  .wa-btn, .rcs-btn { 
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 10px; 
+    text-decoration: none; font-size: 14px; font-weight: 700; transition: 0.15s; border: none; cursor: pointer; color: #fff;
   }
-  .wa-btn:hover { background: #20b558; transform: scale(1.04); box-shadow: 0 5px 18px rgba(37,211,102,0.45); }
-  .rcs-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--google-blue); color: #fff; text-decoration: none;
-    padding: 9px 14px; border-radius: 10px;
-    font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
-    white-space: nowrap; transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
-    flex-shrink: 0; box-shadow: 0 3px 12px rgba(26,115,232,0.35);
-    border: none; cursor: pointer;
-  }
-  .rcs-btn:hover { background: var(--google-blue-hover); transform: scale(1.04); box-shadow: 0 5px 18px rgba(26,115,232,0.5); }
-  .copy-section { background: var(--vi-card); border: 1px solid var(--vi-border); border-radius: 20px; padding: 22px 24px; margin-top: 8px; }
-  .copy-section-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
-  .copy-section-title { font-size: 13px; font-weight: 600; color: var(--vi-magenta); letter-spacing: 2px; text-transform: uppercase; }
-  .copy-all-btn { background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px var(--vi-glow); }
-  .copy-all-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px var(--vi-glow); }
-  .copy-all-btn:active { transform: scale(0.97); }
-  .all-numbers-box { width: 100%; background: rgba(255,255,255,0.04); border: 1.5px solid var(--vi-border); border-radius: 12px; padding: 14px 16px; font-family: 'Share Tech Mono', monospace; font-size: 16px; color: #fff; letter-spacing: 2px; line-height: 2; resize: none; outline: none; min-height: 100px; }
-  .num-card.sent { border-color: rgba(37,211,102,0.6) !important; background: rgba(37,211,102,0.07) !important; opacity: 0.75; }
-  .wa-btn.sent-btn { background: #1a9e4e; pointer-events: none; cursor: default; box-shadow: none; transform: none !important; }
-  .rcs-btn.sent-btn { background: #1557B0; pointer-events: none; cursor: default; box-shadow: none; transform: none !important; }
-  .sent-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: #25D366; background: rgba(37,211,102,0.12); border: 1px solid rgba(37,211,102,0.35); border-radius: 5px; padding: 2px 7px; margin-top: 4px; text-transform: uppercase; }
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(60px); background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); color: #fff; padding: 12px 28px; border-radius: 30px; font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; transition: transform 0.3s, opacity 0.3s; opacity: 0; pointer-events: none; z-index: 999; box-shadow: 0 8px 30px var(--vi-glow); }
+  .wa-btn { background: #25D366; box-shadow: 0 3px 12px rgba(37,211,102,0.3); }
+  .wa-btn:hover { background: #20b558; transform: scale(1.05); }
+  .rcs-btn { background: var(--google-blue); box-shadow: 0 3px 12px rgba(26,115,232,0.35); }
+  .rcs-btn:hover { background: var(--google-blue-hover); transform: scale(1.05); }
+
+  .sent-btn { background: #444 !important; pointer-events: none; opacity: 0.7; box-shadow: none !important; }
+  
+  .error-msg { display: none; color: #ff6b6b; font-size: 13px; margin-top: 10px; padding: 10px; background: rgba(255,107,107,0.1); border-radius: 8px; border-left: 3px solid #ff6b6b; }
+  .error-msg.show { display: block; }
+
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(60px); background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); color: #fff; padding: 12px 28px; border-radius: 30px; font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; transition: 0.3s; opacity: 0; pointer-events: none; z-index: 999; box-shadow: 0 8px 30px var(--vi-glow); }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .btn-row { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
-  .check-btn { flex: 1; min-width: 180px; background: transparent; color: var(--vi-magenta); border: 1.5px solid var(--vi-magenta); border-radius: 12px; padding: 13px 20px; font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.15s; white-space: nowrap; }
-  .check-btn:hover { background: rgba(224,0,144,0.12); transform: translateY(-2px); }
-  .check-btn:active { transform: translateY(0); }
-  .check-section { display: none; background: var(--vi-card); border: 1px solid var(--vi-border); border-radius: 20px; padding: 24px 24px 20px; margin-bottom: 28px; animation: fadeUp 0.4s ease both; }
-  .check-section.show { display: block; }
-  .check-header { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; margin-bottom: 6px; }
-  .check-subtext { display: block; font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 1px; margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
-  .digit-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; margin-bottom: 6px; }
-  .digit-btn { width: 52px; height: 52px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1.5px solid var(--vi-border); color: #fff; font-family: 'Share Tech Mono', monospace; font-size: 22px; font-weight: 700; cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.15s; display: flex; align-items: center; justify-content: center; }
-  .digit-btn:hover { border-color: var(--vi-magenta); background: rgba(224,0,144,0.1); transform: translateY(-2px); }
-  .digit-btn.selected { border-color: var(--vi-yellow); background: rgba(255,206,0,0.12); color: var(--vi-yellow); box-shadow: 0 0 16px rgba(255,206,0,0.2); transform: translateY(-2px); }
-  .check-result { display: none; margin-top: 20px; border-top: 1px solid var(--vi-border); padding-top: 18px; animation: fadeUp 0.3s ease both; }
-  .check-result.show { display: block; }
-  .check-outreach-header {
-    font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.55);
-    letter-spacing: 1.5px; text-transform: uppercase;
-    margin: 22px 0 14px; padding-top: 18px;
-    border-top: 1px solid var(--vi-border);
-  }
-  .check-outreach-header span { color: var(--vi-yellow); font-family: 'Share Tech Mono', monospace; }
-  .footer { text-align: center; margin-top: 50px; color: rgba(255,255,255,0.2); font-size: 13px; letter-spacing: 0.5px; }
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: var(--vi-dark); }
-  ::-webkit-scrollbar-thumb { background: var(--vi-purple); border-radius: 10px; }
+
+  /* Check Matching Position specific */
+  .digit-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+  .digit-btn { width: 45px; height: 45px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--vi-border); color: #fff; font-family: 'Share Tech Mono', monospace; font-size: 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+  .digit-btn.selected { background: var(--vi-yellow); color: #000; border-color: #fff; transform: scale(1.1); box-shadow: 0 0 15px var(--vi-yellow); }
+
+  .footer { text-align: center; margin-top: 50px; color: rgba(255,255,255,0.2); font-size: 13px; letter-spacing: 0.5px; padding-bottom: 20px; }
 </style>
 </head>
 <body>
-<div class="container">
 
+<div class="container">
   <!-- HEADER -->
   <div class="header">
     <div class="vi-logo">
@@ -134,397 +109,232 @@
       <span class="vi-logo-text">Vi</span>
       <div class="vi-dot"></div>
     </div>
-    <h1>Premium Number <span>Matcher</span></h1>
-    <p>CPOS Available Numbers → Instant WhatsApp & RCS Outreach</p>
+    <h1>Premium Number <span>Outreach</span></h1>
+    <p>CPOS Smart Matching & Bulk Send Workflow</p>
   </div>
 
-  <!-- INPUT CARD -->
-  <div class="input-card">
-    <span class="input-label">📋 Enter Available Number from CPOS</span>
-    <div class="input-row">
-      <input type="tel" class="num-input" id="availableNum" placeholder="XXXXXXXXXX" maxlength="10" inputmode="numeric" />
-    </div>
-    <div class="btn-row">
-      <button class="generate-btn" onclick="generateCards()">▶ Generate</button>
-      <button class="check-btn" onclick="checkMatching()">🔍 Check Matching on CPOS</button>
-    </div>
-    <div class="error-msg" id="errorMsg">⚠️ Please enter a valid 10-digit mobile number.</div>
-    <div class="detected-info" id="detectedInfo">
-      <span>Base Detected:</span>
-      <span class="base-badge" id="baseDisplay">—</span>
-      <span>→ Generating 10 options (0–9)</span>
-    </div>
+  <!-- MAIN NAVIGATION -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchWorkflow('single')">👤 Single Number</button>
+    <button class="tab-btn" onclick="switchWorkflow('bulk')">📦 Bulk Outreach</button>
+    <button class="tab-btn" onclick="switchWorkflow('check')">🔍 Position Match</button>
   </div>
 
-  <!-- CHECK MATCHING SECTION -->
-  <div class="check-section" id="checkSection">
-    <div class="check-header">
-      🔍 Select the digit available on CPOS
-      <span class="check-subtext" id="checkSubtext"></span>
+  <!-- WORKFLOW: SINGLE NUMBER -->
+  <div id="wf-single" class="workflow-section active">
+    <div class="card-box">
+      <span class="input-label">📋 Enter Available Number from CPOS</span>
+      <input type="tel" id="singleNumInput" class="num-input" placeholder="XXXXXXXXXX" maxlength="10">
+      <button class="primary-btn" onclick="processSingle()">▶ Generate 10 Variations</button>
+      <div id="singleError" class="error-msg">⚠️ Valid 10-digit number enter karein.</div>
     </div>
-    <div class="digit-buttons" id="digitButtons"></div>
-    <div class="check-result" id="checkResult">
-      <div class="copy-section-header">
-        <span class="copy-section-title">📋 All Matching Numbers for Selected Digit</span>
-        <button class="copy-all-btn" onclick="copyCheckNumbers()">📋 Copy All Numbers</button>
-      </div>
-      <textarea class="all-numbers-box" id="checkNumbersBox" readonly></textarea>
-
-      <!-- OUTREACH CARDS for Check Matching -->
-      <div class="check-outreach-header">
-        📤 Send Outreach To → <span id="checkCountLabel">0</span> Matching Numbers
-      </div>
-      <div class="results-grid" id="checkResultsGrid"></div>
-    </div>
+    <div id="singleResults" class="results-grid"></div>
   </div>
 
-  <!-- RESULTS -->
-  <div class="results-section" id="resultsSection">
-    <div class="results-header">
-      Send Outreach To → <span id="countLabel">10</span> Matching Customers
+  <!-- WORKFLOW: BULK SEND -->
+  <div id="wf-bulk" class="workflow-section">
+    <div class="card-box">
+      <span class="input-label">📦 Bulk Input (Format: Number,MatchingNumber)</span>
+      <textarea id="bulkInput" class="bulk-textarea" placeholder="98XXXXXXXX,98XXXXXX01&#10;99XXXXXXXX,99XXXXXX05&#10;88XXXXXXXX,88XXXXXX09"></textarea>
+      <button class="primary-btn" onclick="processBulk()">⚡ Generate Now</button>
+      <div id="bulkError" class="error-msg">⚠️ Format sahi nahi hai ya data khali hai.</div>
     </div>
-    <div class="results-grid" id="resultsGrid"></div>
-    <div class="copy-section">
-      <div class="copy-section-header">
-        <span class="copy-section-title">📋 All 10 Numbers (Including Available)</span>
-        <button class="copy-all-btn" onclick="copyAllNumbers()">📋 Copy All Numbers</button>
-      </div>
-      <textarea class="all-numbers-box" id="allNumbersBox" readonly></textarea>
-    </div>
+    <div id="bulkResults" class="results-grid"></div>
   </div>
 
-  <div class="footer">Vi Premium Number Outreach Tool &nbsp;|&nbsp; Internal Use Only<br><span style="font-size:12px;letter-spacing:1.5px;margin-top:6px;display:inline-block;color:rgba(255,255,255,0.3);">Version&nbsp;:<b>RAM</b>-<b>Gurgaon</b>-V.17.04.2026</span></div>
+  <!-- WORKFLOW: POSITION CHECK -->
+  <div id="wf-check" class="workflow-section">
+    <div class="card-box">
+      <span class="input-label">🔍 Enter CPOS Number to find Position Match</span>
+      <input type="tel" id="checkNumInput" class="num-input" placeholder="XXXXXXXXXX" maxlength="10">
+      <button class="primary-btn" onclick="initPositionCheck()">📍 Select Digit Position</button>
+      <div id="checkError" class="error-msg">⚠️ Valid 10-digit number enter karein.</div>
+      <div id="posSelector" class="digit-buttons"></div>
+    </div>
+    <div id="checkResults" class="results-grid"></div>
+  </div>
+
+  <div class="footer">
+    Vi Premium Tool V.18.04.2026 | Internal Use Only
+  </div>
 </div>
 
-<div class="toast" id="toast">✅ Numbers Copied!</div>
+<div class="toast" id="toast">✅ Sent Successfully!</div>
 
 <script>
-  function buildMessage(customerNum, availableNum) {
+  // Helper: Common Outreach Message
+  function buildMessage(custNum, matchNum) {
     return "🙏 Namaskar Sir/Mam!\n\n" +
       "Aap ek *Premium Vi Number* use kar rahe hain! 🌟\n" +
       "Vi aapke liye ek ekdum milta-julta Premium Number *ZERO price* par leke aaya hai!\n\n" +
       "✨ *Special Offer Details* ✨\n" +
       "━━━━━━━━━━━━━━━━━━━━\n" +
-      "📱 Aapka Number: *" + customerNum + "*\n" +
-      "🎯 Matching Number: *" + availableNum + "*\n" +
+      "📱 Aapka Number: *" + custNum + "*\n" +
+      "🎯 Matching Number: *" + matchNum + "*\n" +
       "━━━━━━━━━━━━━━━━━━━━\n\n" +
       "⏳ *Limited Time Offer* — Zyada wait mat kariye!\n" +
       "💥 Yeh mauka sirf aapke liye hai!\n\n" +
-      "बस *\"Yes\"* Reply करें — बाकी हम संभाल लेंगे! 🤝\n\n" +
+      "बस *\"Yes\"* Reply करें — baki hum sambhal lenge! 🤝\n\n" +
       "📞 Call/WhatsApp: 8377919293\n" +
       "👉 https://wa.me/918377919293?text=Yes";
   }
 
-  function generateCards() {
-    var input = document.getElementById('availableNum').value.trim();
-    var errorMsg = document.getElementById('errorMsg');
-    var detectedInfo = document.getElementById('detectedInfo');
-    var resultsSection = document.getElementById('resultsSection');
-    var grid = document.getElementById('resultsGrid');
-
-    errorMsg.classList.remove('show');
-
-    if (!/^\d{10}$/.test(input)) {
-      errorMsg.classList.add('show');
-      resultsSection.classList.remove('show');
-      detectedInfo.classList.remove('show');
-      return;
-    }
-
-    var base = input.slice(0, 9);
-    var lastDigit = parseInt(input.slice(9));
-
-    document.getElementById('baseDisplay').textContent = base + 'X';
-    detectedInfo.classList.add('show');
-
-    grid.innerHTML = '';
-    var customerNumbers = [];
-
-    for (var d = 0; d <= 9; d++) {
-      var targetNum = base + d;
-      var isAvailable = (d === lastDigit);
-
-      var formatted =
-        targetNum.slice(0, 5) + ' ' +
-        targetNum.slice(5, 9) +
-        '<span class="last-digit">' + targetNum[9] + '</span>';
-
-      var msg = buildMessage(targetNum, input);
-      var waLink = 'https://wa.me/91' + targetNum + '?text=' + encodeURIComponent(msg);
-      var rcsLink = 'sms:+91' + targetNum + '?body=' + encodeURIComponent(msg);
-
-      var card = document.createElement('div');
-      card.className = 'num-card';
-      card.style.animationDelay = (d * 0.04) + 's';
-
-      if (isAvailable) {
-        card.style.borderColor = 'rgba(255,206,0,0.5)';
-        card.style.background = 'rgba(255,206,0,0.05)';
-      }
-
-      var cardId = 'card-' + d;
-      card.id = cardId;
-
-      card.innerHTML =
-        '<div class="num-display">' +
-          '<div class="num-val">' + formatted + '</div>' +
-          '<div class="num-suffix" id="suffix-' + d + '">' + (isAvailable ? '⭐ Available (CPOS)' : '👤 Customer Number') + '</div>' +
-        '</div>' +
-        '<div class="btn-group">' +
-          '<a class="wa-btn" id="wabtn-' + d + '" href="' + waLink + '" target="_blank" title="Send via WhatsApp">' +
-            '<span style="font-size:15px">💬</span> WA' +
-          '</a>' +
-          '<a class="rcs-btn" id="rcsbtn-' + d + '" href="' + rcsLink + '" title="Send via RCS/SMS">' +
-            '<span style="font-size:15px">✉️</span> RCS' +
-          '</a>' +
-        '</div>';
-
-      grid.appendChild(card);
-
-      (function(idx) {
-        document.getElementById('wabtn-' + idx).addEventListener('click', function() {
-          setTimeout(function() {
-            var btn = document.getElementById('wabtn-' + idx);
-            btn.classList.add('sent-btn');
-            btn.innerHTML = '<span style="font-size:15px">✅</span> Sent';
-            var suffix = document.getElementById('suffix-' + idx);
-            if (!suffix.querySelector('.wa-sent-badge')) {
-              var badge = document.createElement('span');
-              badge.className = 'sent-badge wa-sent-badge';
-              badge.textContent = '✔ WA Sent';
-              suffix.appendChild(badge);
-            }
-          }, 800);
-        });
-
-        document.getElementById('rcsbtn-' + idx).addEventListener('click', function() {
-          setTimeout(function() {
-            var btn = document.getElementById('rcsbtn-' + idx);
-            btn.classList.add('sent-btn');
-            btn.innerHTML = '<span style="font-size:15px">✅</span> Sent';
-            var suffix = document.getElementById('suffix-' + idx);
-            if (!suffix.querySelector('.rcs-sent-badge')) {
-              var badge = document.createElement('span');
-              badge.className = 'sent-badge rcs-sent-badge';
-              badge.style.color = '#1A73E8';
-              badge.style.background = 'rgba(26,115,232,0.1)';
-              badge.style.borderColor = 'rgba(26,115,232,0.35)';
-              badge.style.marginLeft = '4px';
-              badge.textContent = '✔ RCS Sent';
-              suffix.appendChild(badge);
-            }
-          }, 800);
-        });
-      })(d);
-
-      customerNumbers.push(targetNum);
-    }
-
-    document.getElementById('countLabel').textContent = customerNumbers.length;
-    document.getElementById('allNumbersBox').value = customerNumbers.join('\n');
-
-    resultsSection.classList.add('show');
-    setTimeout(function() {
-      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+  // Switch between Workflows
+  function switchWorkflow(type) {
+    document.querySelectorAll('.workflow-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById('wf-' + type).classList.add('active');
+    event.currentTarget.classList.add('active');
   }
 
-  function copyAllNumbers() {
-    var box = document.getElementById('allNumbersBox');
-    if (!box.value) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(box.value).then(function() { showToast('✅ Numbers Copied!'); }).catch(function() { fallbackCopy(box); });
-    } else { fallbackCopy(box); }
+  // UI Component: Create Number Card
+  function createCard(custNum, matchNum, label, highlightPos = -1) {
+    const card = document.createElement('div');
+    card.className = 'num-card';
+    
+    let displayNum = custNum;
+    if(highlightPos !== -1) {
+      let parts = custNum.split('');
+      parts[highlightPos] = `<span class="last-digit">${parts[highlightPos]}</span>`;
+      displayNum = parts.join('');
+    }
+
+    const msg = buildMessage(custNum, matchNum);
+    const waLink = `https://wa.me/91${custNum}?text=${encodeURIComponent(msg)}`;
+    const rcsLink = `sms:+91${custNum}?body=${encodeURIComponent(msg)}`;
+
+    card.innerHTML = `
+      <div class="num-display">
+        <div class="num-val">${displayNum}</div>
+        <div class="match-val">Match: ${matchNum}</div>
+        <div style="font-size:10px; color:rgba(255,255,255,0.3)">${label}</div>
+      </div>
+      <div class="btn-group">
+        <a href="${waLink}" target="_blank" class="wa-btn" onclick="markSent(this)">💬 WA</a>
+        <a href="${rcsLink}" class="rcs-btn" onclick="markSent(this)">✉️ RCS</a>
+      </div>
+    `;
+    return card;
   }
 
-  function fallbackCopy(el) {
-    el.select(); el.setSelectionRange(0, 99999);
-    document.execCommand('copy');
-    showToast('✅ Numbers Copied!');
+  function markSent(btn) {
+    setTimeout(() => {
+      btn.classList.add('sent-btn');
+      btn.innerHTML = "✅ Sent";
+      showToast("Outreach Link Opened!");
+    }, 500);
   }
 
   function showToast(msg) {
-    var t = document.getElementById('toast');
+    const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
-    setTimeout(function() { t.classList.remove('show'); }, 2500);
+    setTimeout(() => t.classList.remove('show'), 2000);
   }
 
-  var _checkInput = '';
-  var _selectedPos = -1;
-
-  function checkMatching() {
-    var input = document.getElementById('availableNum').value.trim();
-    var errorMsg = document.getElementById('errorMsg');
-    errorMsg.classList.remove('show');
-    if (!/^\d{10}$/.test(input)) { errorMsg.classList.add('show'); return; }
-
-    _checkInput = input;
-    _selectedPos = -1;
-
-    document.getElementById('checkSubtext').textContent =
-      'Entered: ' + input.slice(0,5) + ' ' + input.slice(5) + '  |  Click any digit position to see options';
-
-    var container = document.getElementById('digitButtons');
-    container.innerHTML = '';
-
-    for (var i = 0; i < 10; i++) {
-      var btn = document.createElement('button');
-      btn.className = 'digit-btn';
-      btn.textContent = input[i];
-      btn.id = 'pos-btn-' + i;
-      btn.onclick = (function(pos) { return function() { selectDigit(pos); }; })(i);
-      container.appendChild(btn);
-    }
-
-    document.getElementById('checkResult').classList.remove('show');
-    document.getElementById('checkNumbersBox').value = '';
-    document.getElementById('checkSection').classList.add('show');
-    setTimeout(function() {
-      document.getElementById('checkSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  }
-
-  function selectDigit(pos) {
-    if (_selectedPos === pos) {
-      _selectedPos = -1;
-      document.getElementById('pos-btn-' + pos).classList.remove('selected');
-      document.getElementById('checkResult').classList.remove('show');
-      document.getElementById('checkNumbersBox').value = '';
-      document.getElementById('checkResultsGrid').innerHTML = '';
-      return;
-    }
-    if (_selectedPos !== -1) {
-      var prev = document.getElementById('pos-btn-' + _selectedPos);
-      if (prev) prev.classList.remove('selected');
-    }
-    _selectedPos = pos;
-    document.getElementById('pos-btn-' + pos).classList.add('selected');
-
-    var prefix = _checkInput.slice(0, pos);
-    var suffix = _checkInput.slice(pos + 1);
-    var numbers = [];
-    for (var d = 0; d <= 9; d++) {
-      var candidate = prefix + d + suffix;
-      if (parseInt(candidate[0]) >= 6) numbers.push(candidate);
-    }
-
-    document.getElementById('checkNumbersBox').value = numbers.join('\n');
-    document.getElementById('checkCountLabel').textContent = numbers.length;
-    buildCheckCards(numbers, pos);
-
-    var result = document.getElementById('checkResult');
-    result.classList.add('show');
-    setTimeout(function() {
-      result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 100);
-  }
-
-  function buildCheckCards(numbers, selectedPos) {
-    var grid = document.getElementById('checkResultsGrid');
+  // Workflow Logic: SINGLE
+  function processSingle() {
+    const input = document.getElementById('singleNumInput').value.trim();
+    const grid = document.getElementById('singleResults');
+    const err = document.getElementById('singleError');
+    
+    err.classList.remove('show');
     grid.innerHTML = '';
 
-    numbers.forEach(function(num, idx) {
-      var isAvailable = (num === _checkInput);
+    if(!/^\d{10}$/.test(input)) {
+      err.classList.add('show');
+      return;
+    }
 
-      // Highlight the changed digit
-      var formatted = '';
-      for (var i = 0; i < 10; i++) {
-        if (i === selectedPos) {
-          formatted += '<span class="last-digit">' + num[i] + '</span>';
-        } else {
-          formatted += num[i];
+    const base = input.substring(0, 9);
+    for(let i=0; i<=9; i++) {
+      const target = base + i;
+      grid.appendChild(createCard(target, input, i == input[9] ? "⭐ Same" : "👤 Customer", 9));
+    }
+  }
+
+  // Workflow Logic: BULK (NEW FEATURE)
+  function processBulk() {
+    const text = document.getElementById('bulkInput').value.trim();
+    const grid = document.getElementById('bulkResults');
+    const err = document.getElementById('bulkError');
+
+    err.classList.remove('show');
+    grid.innerHTML = '';
+
+    if(!text) {
+      err.classList.add('show');
+      return;
+    }
+
+    const lines = text.split('\n');
+    let processedCount = 0;
+
+    lines.forEach(line => {
+      // Split by comma or space
+      const parts = line.split(/[ ,]+/).map(p => p.trim());
+      if(parts.length >= 2) {
+        const custNum = parts[0].replace(/\D/g, '');
+        const matchNum = parts[1].replace(/\D/g, '');
+
+        if(custNum.length === 10 && matchNum.length === 10) {
+          grid.appendChild(createCard(custNum, matchNum, "📦 Bulk Outreach"));
+          processedCount++;
         }
-        if (i === 4) formatted += ' ';
       }
-
-      var msg = buildMessage(num, _checkInput);
-      var waLink = 'https://wa.me/91' + num + '?text=' + encodeURIComponent(msg);
-      var rcsLink = 'sms:+91' + num + '?body=' + encodeURIComponent(msg);
-
-      var cardId = 'chk-card-' + idx;
-      var waBtnId = 'chk-wabtn-' + idx;
-      var rcsBtnId = 'chk-rcsbtn-' + idx;
-      var suffixId = 'chk-suffix-' + idx;
-
-      var card = document.createElement('div');
-      card.className = 'num-card';
-      card.id = cardId;
-      card.style.animationDelay = (idx * 0.04) + 's';
-
-      if (isAvailable) {
-        card.style.borderColor = 'rgba(255,206,0,0.5)';
-        card.style.background = 'rgba(255,206,0,0.05)';
-      }
-
-      card.innerHTML =
-        '<div class="num-display">' +
-          '<div class="num-val">' + formatted + '</div>' +
-          '<div class="num-suffix" id="' + suffixId + '">' +
-            (isAvailable ? '⭐ Available (CPOS)' : '👤 Customer Number') +
-          '</div>' +
-        '</div>' +
-        '<div class="btn-group">' +
-          '<a class="wa-btn" id="' + waBtnId + '" href="' + waLink + '" target="_blank" title="Send via WhatsApp">' +
-            '<span style="font-size:15px">💬</span> WA' +
-          '</a>' +
-          '<a class="rcs-btn" id="' + rcsBtnId + '" href="' + rcsLink + '" title="Send via RCS/SMS">' +
-            '<span style="font-size:15px">✉️</span> RCS' +
-          '</a>' +
-        '</div>';
-
-      grid.appendChild(card);
-
-      (function(i, wId, rId, sId) {
-        document.getElementById(wId).addEventListener('click', function() {
-          setTimeout(function() {
-            var btn = document.getElementById(wId);
-            if (!btn) return;
-            btn.classList.add('sent-btn');
-            btn.innerHTML = '<span style="font-size:15px">✅</span> Sent';
-            var suffix = document.getElementById(sId);
-            if (suffix && !suffix.querySelector('.wa-sent-badge')) {
-              var badge = document.createElement('span');
-              badge.className = 'sent-badge wa-sent-badge';
-              badge.textContent = '✔ WA Sent';
-              suffix.appendChild(badge);
-            }
-          }, 800);
-        });
-
-        document.getElementById(rId).addEventListener('click', function() {
-          setTimeout(function() {
-            var btn = document.getElementById(rId);
-            if (!btn) return;
-            btn.classList.add('sent-btn');
-            btn.innerHTML = '<span style="font-size:15px">✅</span> Sent';
-            var suffix = document.getElementById(sId);
-            if (suffix && !suffix.querySelector('.rcs-sent-badge')) {
-              var badge = document.createElement('span');
-              badge.className = 'sent-badge rcs-sent-badge';
-              badge.style.color = '#1A73E8';
-              badge.style.background = 'rgba(26,115,232,0.1)';
-              badge.style.borderColor = 'rgba(26,115,232,0.35)';
-              badge.style.marginLeft = '4px';
-              badge.textContent = '✔ RCS Sent';
-              suffix.appendChild(badge);
-            }
-          }, 800);
-        });
-      })(idx, waBtnId, rcsBtnId, suffixId);
     });
+
+    if(processedCount === 0) {
+      err.textContent = "⚠️ Koi bhi valid line nahi mili (Format: Number,MatchingNumber)";
+      err.classList.add('show');
+    }
   }
 
-  function copyCheckNumbers() {
-    var box = document.getElementById('checkNumbersBox');
-    if (!box.value) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(box.value).then(function() { showToast('✅ Numbers Copied!'); }).catch(function() { fallbackCopy(box); });
-    } else { fallbackCopy(box); }
+  // Workflow Logic: POSITION CHECK
+  let currentCheckNum = "";
+  function initPositionCheck() {
+    const input = document.getElementById('checkNumInput').value.trim();
+    const selector = document.getElementById('posSelector');
+    const err = document.getElementById('checkError');
+    
+    err.classList.remove('show');
+    selector.innerHTML = '';
+    document.getElementById('checkResults').innerHTML = '';
+
+    if(!/^\d{10}$/.test(input)) {
+      err.classList.add('show');
+      return;
+    }
+
+    currentCheckNum = input;
+    for(let i=0; i<10; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'digit-btn';
+      btn.textContent = input[i];
+      btn.onclick = () => selectPosition(i, btn);
+      selector.appendChild(btn);
+    }
   }
 
-  document.getElementById('availableNum').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') generateCards();
-  });
+  function selectPosition(pos, btn) {
+    document.querySelectorAll('.digit-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    
+    const grid = document.getElementById('checkResults');
+    grid.innerHTML = '';
+
+    const prefix = currentCheckNum.substring(0, pos);
+    const suffix = currentCheckNum.substring(pos + 1);
+
+    for(let d=0; d<=9; d++) {
+      const target = prefix + d + suffix;
+      // Start with 6,7,8,9 mostly for Indian Mobiles
+      if(pos === 0 && d < 6) continue; 
+      
+      grid.appendChild(createCard(target, currentCheckNum, `Pos ${pos+1} Match`, pos));
+    }
+  }
 </script>
+
 </body>
 </html>
