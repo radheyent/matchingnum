@@ -96,6 +96,15 @@
   .digit-btn { width: 45px; height: 45px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--vi-border); color: #fff; font-family: 'Share Tech Mono', monospace; font-size: 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
   .digit-btn.selected { background: var(--vi-yellow); color: #000; border-color: #fff; transform: scale(1.1); box-shadow: 0 0 15px var(--vi-yellow); }
 
+  /* COPY BOX - only new addition */
+  .copy-box { display: none; background: var(--vi-card); border: 1px solid var(--vi-border); border-radius: 16px; padding: 18px 20px; margin-top: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .copy-box-label { font-size: 13px; font-weight: 600; color: var(--vi-magenta); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
+  .copy-box-row { display: flex; gap: 10px; align-items: flex-start; }
+  .copy-textarea { flex: 1; background: rgba(255,255,255,0.04); border: 1.5px solid var(--vi-border); border-radius: 10px; padding: 12px 14px; font-family: 'Share Tech Mono', monospace; font-size: 15px; color: #fff; letter-spacing: 1px; line-height: 1.8; outline: none; resize: none; min-height: 100px; }
+  .copy-btn { background: linear-gradient(135deg, var(--vi-purple), var(--vi-magenta)); color: #fff; border: none; border-radius: 10px; padding: 12px 16px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px var(--vi-glow); transition: 0.2s; white-space: nowrap; }
+  .copy-btn:hover { transform: translateY(-2px); }
+  .copy-btn.copied { background: #25D366; box-shadow: 0 4px 14px rgba(37,211,102,0.35); }
+
   .footer { text-align: center; margin-top: 50px; color: rgba(255,255,255,0.2); font-size: 13px; letter-spacing: 0.5px; padding-bottom: 20px; }
 </style>
 </head>
@@ -152,6 +161,15 @@
       <div id="posSelector" class="digit-buttons"></div>
     </div>
     <div id="checkResults" class="results-grid"></div>
+
+    <!-- COPY BOX — only new thing added -->
+    <div id="copyBox" class="copy-box">
+      <span class="copy-box-label">📋 Generated Numbers — Copy Karo</span>
+      <div class="copy-box-row">
+        <textarea id="copyTextarea" class="copy-textarea" readonly></textarea>
+        <button class="copy-btn" id="copyBtn" onclick="copyNumbers()">📋 Copy</button>
+      </div>
+    </div>
   </div>
 
   <div class="footer">
@@ -183,7 +201,6 @@
   function switchWorkflow(type) {
     document.querySelectorAll('.workflow-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    
     document.getElementById('wf-' + type).classList.add('active');
     event.currentTarget.classList.add('active');
   }
@@ -237,15 +254,9 @@
     const input = document.getElementById('singleNumInput').value.trim();
     const grid = document.getElementById('singleResults');
     const err = document.getElementById('singleError');
-    
     err.classList.remove('show');
     grid.innerHTML = '';
-
-    if(!/^\d{10}$/.test(input)) {
-      err.classList.add('show');
-      return;
-    }
-
+    if(!/^\d{10}$/.test(input)) { err.classList.add('show'); return; }
     const base = input.substring(0, 9);
     for(let i=0; i<=9; i++) {
       const target = base + i;
@@ -253,37 +264,27 @@
     }
   }
 
-  // Workflow Logic: BULK (NEW FEATURE)
+  // Workflow Logic: BULK
   function processBulk() {
     const text = document.getElementById('bulkInput').value.trim();
     const grid = document.getElementById('bulkResults');
     const err = document.getElementById('bulkError');
-
     err.classList.remove('show');
     grid.innerHTML = '';
-
-    if(!text) {
-      err.classList.add('show');
-      return;
-    }
-
+    if(!text) { err.classList.add('show'); return; }
     const lines = text.split('\n');
     let processedCount = 0;
-
     lines.forEach(line => {
-      // Split by comma or space
       const parts = line.split(/[ ,]+/).map(p => p.trim());
       if(parts.length >= 2) {
         const custNum = parts[0].replace(/\D/g, '');
         const matchNum = parts[1].replace(/\D/g, '');
-
         if(custNum.length === 10 && matchNum.length === 10) {
           grid.appendChild(createCard(custNum, matchNum, "📦 Bulk Outreach"));
           processedCount++;
         }
       }
     });
-
     if(processedCount === 0) {
       err.textContent = "⚠️ Koi bhi valid line nahi mili (Format: Number,MatchingNumber)";
       err.classList.add('show');
@@ -292,20 +293,17 @@
 
   // Workflow Logic: POSITION CHECK
   let currentCheckNum = "";
+
   function initPositionCheck() {
     const input = document.getElementById('checkNumInput').value.trim();
     const selector = document.getElementById('posSelector');
     const err = document.getElementById('checkError');
-    
     err.classList.remove('show');
     selector.innerHTML = '';
     document.getElementById('checkResults').innerHTML = '';
-
-    if(!/^\d{10}$/.test(input)) {
-      err.classList.add('show');
-      return;
-    }
-
+    document.getElementById('copyBox').style.display = 'none';
+    document.getElementById('copyTextarea').value = '';
+    if(!/^\d{10}$/.test(input)) { err.classList.add('show'); return; }
     currentCheckNum = input;
     for(let i=0; i<10; i++) {
       const btn = document.createElement('button');
@@ -323,18 +321,45 @@
     const grid = document.getElementById('checkResults');
     grid.innerHTML = '';
 
+    const generatedNums = [];
     const prefix = currentCheckNum.substring(0, pos);
     const suffix = currentCheckNum.substring(pos + 1);
 
     for(let d=0; d<=9; d++) {
       const target = prefix + d + suffix;
-      // Start with 6,7,8,9 mostly for Indian Mobiles
       if(pos === 0 && d < 6) continue; 
-      
       grid.appendChild(createCard(target, currentCheckNum, `Pos ${pos+1} Match`, pos));
+      generatedNums.push(target);
     }
+
+    // Show copy box with generated numbers
+    const copyBox = document.getElementById('copyBox');
+    const copyTA = document.getElementById('copyTextarea');
+    const copyBtn = document.getElementById('copyBtn');
+    copyTA.value = generatedNums.join('\n');
+    copyBtn.textContent = '📋 Copy';
+    copyBtn.classList.remove('copied');
+    copyBox.style.display = 'block';
+    setTimeout(() => copyBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+  }
+
+  function copyNumbers() {
+    const ta = document.getElementById('copyTextarea');
+    const btn = document.getElementById('copyBtn');
+    navigator.clipboard.writeText(ta.value).then(() => {
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      showToast("Numbers Copied! ✅");
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2500);
+    }).catch(() => {
+      ta.select();
+      document.execCommand('copy');
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      showToast("Numbers Copied! ✅");
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2500);
+    });
   }
 </script>
-
 </body>
 </html>
