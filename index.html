@@ -457,15 +457,15 @@ function updStats(gd,sd,act){
 
 /* DEFAULT FORMAT */
 const DEF_FMT=
-"🙏 Namaskar !\n"+
-"Aap Premium Vi Number use kar rahe hain 🌟\n\n"+
-"Vi aapke liye matching Premium Number laaya hai — ZERO cost 🎯\n\n"+
-"📱 Aapka: {custNum}\n"+
-"🎯 Match: {matchNum}\n\n"+
-"⏳ Limited Offer!\n"+
-"\"Yes\" reply karein — baaki hum sambhal lenge 🤝\n\n"+
-"📞 8377919293\n"+
-"👉 wa.me/918377919293?text=Yes";
+"Namaskar!\n\n"+
+"Vi special offer for you. Matching\n"+
+"Premium Number at ZERO cost.\n\n"+
+"Aapka: {custNum}\n"+
+"*Match: {matchNum}*\n\n"+
+"Limited offer.\n"+
+"Reply _YES_ now.\n\n"+
+"Call: 8377-919293\n"+
+"wa.me/918377919293?text=YES";
 
 let customFmt=null;
 function buildMsg(c,m){return (customFmt||DEF_FMT).replace(/\{custNum\}/g,c).replace(/\{matchNum\}/g,m);}
