@@ -455,17 +455,19 @@ function updStats(gd,sd,act){
   if(act){const el=document.getElementById('sAct');el.style.fontSize='11px';el.textContent=act;}
 }
 
-/* DEFAULT FORMAT */
-const DEF_FMT=
-"Namaskar!\n\n"+
-"Vi special offer for you. Matching\n"+
-"Premium Number at ZERO cost.\n\n"+
-"Aapka: {custNum}\n"+
-"*Match: {matchNum}*\n\n"+
-"Limited offer.\n"+
-"Reply _YES_ now.\n\n"+
-"Call: 8377-919293\n"+
-"wa.me/918377919293?text=YES";
+/* ── UPDATED DEFAULT FORMAT ── */
+const DEF_FMT =
+"🙏 Namaskar Sir/Mam! \n\n" +
+"Aap ek Premium Number use kar rahe hain 🌟 \n" +
+"Vi aapke liye ek Matching Premium Number ZERO Price par laaya hai ✨\n\n" +
+"📱 Current No: {custNum} \n" +
+"🎯 Matching No.: {matchNum} \n\n" +
+"------ \n\n" +
+"🕉️ *अंक ज्योतिष _(Numerology)_ एवं कुंडली अनुसार विशेष नंबर उपलब्ध हैं* 🔯📿\n" +
+"📈 Lucky Energy, Success & Business Growth ke liye! ✨ \n\n" +
+'*Reply now "Yes"* 🤝 \n' +
+"📞 8377919293 \n" +
+"👉 https://wa.me/918377919293?text=Yes";
 
 let customFmt=null;
 function buildMsg(c,m){return (customFmt||DEF_FMT).replace(/\{custNum\}/g,c).replace(/\{matchNum\}/g,m);}
