@@ -189,6 +189,7 @@ body{background:var(--ink);font-family:var(--ff-b);color:var(--txt);min-height:1
 .n-hl{color:var(--gold-pale);font-weight:700;}
 .nmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .nmatch{font-family:var(--ff-m);font-size:10px;color:var(--txt3);white-space:nowrap;}
+.nname{font-family:var(--ff-b);font-size:10px;color:var(--violet-lt);white-space:nowrap;}
 .ntag{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
 .tag-same{background:rgba(201,147,42,0.18);color:var(--gold-pale);border:1px solid rgba(201,147,42,0.4);}
 .tag-match{background:rgba(123,63,228,0.1);color:var(--violet-lt);border:1px solid rgba(123,63,228,0.2);}
@@ -272,10 +273,11 @@ body{background:var(--ink);font-family:var(--ff-b);color:var(--txt);min-height:1
 .ebody{padding:18px 22px;overflow-y:auto;flex:1;}
 .ph-panel{background:rgba(201,147,42,0.05);border:1px solid rgba(201,147,42,0.15);border-radius:12px;padding:13px 15px;margin-bottom:16px;}
 .ph-title{font-size:10px;font-weight:600;color:var(--gold-lt);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;}
-.ph-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.ph-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px;}
 .ph-chip{background:rgba(201,147,42,0.09);border:1px solid rgba(201,147,42,0.25);border-radius:7px;padding:5px 11px;font-family:var(--ff-m);font-size:13px;color:var(--gold-lt);cursor:pointer;user-select:none;}
 .ph-chip:hover{background:rgba(201,147,42,0.18);}
 .ph-desc{font-size:11px;color:var(--txt3);}
+.ph-note{font-size:10.5px;color:var(--txt3);line-height:1.5;margin-top:6px;padding-top:8px;border-top:1px solid rgba(201,147,42,0.1);}
 .fmt-area{width:100%;height:240px;background:var(--inp-bg);border:1px solid var(--rim);border-radius:12px;padding:15px 16px;font-family:var(--ff-m);font-size:13px;color:var(--txt);line-height:1.7;outline:none;resize:none;transition:border-color 0.15s,background 0.25s,color 0.25s;margin-bottom:12px;}
 .fmt-area:focus{border-color:rgba(123,63,228,0.35);}
 .prev-tog{width:100%;background:var(--inp-bg);border:1px solid var(--rim);border-radius:9px;padding:9px 14px;display:flex;align-items:center;gap:8px;color:var(--txt2);font-family:var(--ff-b);font-size:13px;cursor:pointer;margin-bottom:9px;transition:background 0.25s;}
@@ -398,8 +400,8 @@ body{background:var(--ink);font-family:var(--ff-b);color:var(--txt);min-height:1
   <div id="wf-bulk" class="wf">
     <div class="gpanel">
       <div class="flbl"><span class="flbl-txt">📦 Bulk Input</span><div class="flbl-rule"></div></div>
-      <div class="hint"><span>💡</span><span>Format: <strong>CustomerNumber, MatchNumber</strong> — ek line ek pair (2nd match optional: Customer, Match1, Match2)</span></div>
-      <textarea id="bulkIn" class="bulk-area" placeholder="98XXXXXXXX, 98XXXXXX01&#10;99XXXXXXXX, 99XXXXXX05, 99XXXXXX09&#10;88XXXXXXXX, 88XXXXXX03"></textarea>
+      <div class="hint"><span>💡</span><span>Format: <strong>Customer, Match1</strong> (name/2nd match optional) — ek line ek pair.<br>3rd column: agar number hai to <strong>2nd Matching Number</strong>, agar text hai to <strong>Name</strong>.<br>Dono chahiye? 4 columns use karein: <strong>Customer, Match1, Match2, Name</strong>.</span></div>
+      <textarea id="bulkIn" class="bulk-area" placeholder="98XXXXXXXX, 98XXXXXX01&#10;99XXXXXXXX, 99XXXXXX05, Ricky&#10;88XXXXXXXX, 88XXXXXX03, 88XXXXXX09&#10;77XXXXXXXX, 77XXXXXX02, 77XXXXXX07, Manish"></textarea>
       <button class="pbtn" onclick="doBulk()">⚡ Generate All Cards</button>
       <div id="bErr" class="emsg">⚠️ Format sahi nahi hai ya data khali hai.</div>
     </div>
@@ -499,9 +501,20 @@ body{background:var(--ink);font-family:var(--ff-b);color:var(--txt);min-height:1
         <div class="ph-row">
           <span class="ph-chip" onclick="insPh('{custNum}')">{custNum}</span>
           <span class="ph-desc">Customer ka number</span>
-          <span class="ph-chip" onclick="insPh('{matchNum}')">{matchNum}</span>
-          <span class="ph-desc">Matching number</span>
         </div>
+        <div class="ph-row">
+          <span class="ph-chip" onclick="insPh('{matchNum}')">{matchNum}</span>
+          <span class="ph-desc">Pehla matching number</span>
+        </div>
+        <div class="ph-row">
+          <span class="ph-chip" onclick="insPh('{matchNum2}')">{matchNum2}</span>
+          <span class="ph-desc">Dusra matching number (agar diya ho)</span>
+        </div>
+        <div class="ph-row">
+          <span class="ph-chip" onclick="insPh('{name}')">{name}</span>
+          <span class="ph-desc">Customer ka naam (na diya ho to "Sir/Mam")</span>
+        </div>
+        <div class="ph-note">💡 Jis line mein <strong>{matchNum2}</strong> hai, wo line message se apne aap hat jaayegi agar us entry ke liye koi 2nd matching number nahi diya gaya.</div>
       </div>
       <div class="flbl" style="margin-bottom:10px;"><span class="flbl-txt">📝 Message Template</span><div class="flbl-rule"></div></div>
       <textarea id="fmtArea" class="fmt-area" oninput="updPrev()"></textarea>
@@ -556,11 +569,12 @@ function updStats(gd,sd,act){
 
 /* DEFAULT FORMAT */
 const DEF_FMT =
-"🙏 Namaskar Sir/Mam! \n\n" +
+"🙏 Namaskar {name}! \n\n" +
 "Aap ek Premium Number use kar rahe hain 🌟 \n" +
 "Vi aapke liye ek Matching Premium Number ZERO Price par laaya hai ✨\n\n" +
 "📱 Current No: {custNum} \n" +
-"🎯 Matching No.: {matchNum} \n\n" +
+"🎯 Matching No.: {matchNum} \n" +
+"🎯 2nd Matching No.: {matchNum2} \n\n" +
 "------ \n\n" +
 "🕉️ *अंक ज्योतिष _(Numerology)_ एवं कुंडली अनुसार विशेष नंबर उपलब्ध हैं* 🔯📿\n" +
 "📈 Lucky Energy, Success & Business Growth ke liye! ✨ \n\n" +
@@ -569,7 +583,24 @@ const DEF_FMT =
 "👉 https://wa.me/918377919293?text=Yes";
 
 let customFmt=null;
-function buildMsg(c,m){return (customFmt||DEF_FMT).replace(/\{custNum\}/g,c).replace(/\{matchNum\}/g,m);}
+
+/* buildMsg now takes an array of match numbers (1 or 2) and an optional name.
+   Any template line containing {matchNum2} is auto-removed if no 2nd match number exists. */
+function buildMsg(c,matches,name){
+  const m1=(matches&&matches[0])?matches[0]:'';
+  const m2=(matches&&matches[1])?matches[1]:'';
+  const displayName=(name&&name.trim())?name.trim():'Sir/Mam';
+  const tmpl=customFmt||DEF_FMT;
+  return tmpl.split('\n').filter(line=>{
+    if(line.indexOf('{matchNum2}')!==-1 && !m2)return false;
+    return true;
+  }).map(line=>line
+    .replace(/\{custNum\}/g,c)
+    .replace(/\{matchNum2\}/g,m2)
+    .replace(/\{matchNum\}/g,m1)
+    .replace(/\{name\}/g,displayName)
+  ).join('\n');
+}
 
 /* TABS */
 let activeTab='single';
@@ -602,23 +633,28 @@ function showToast(msg){
 function clrErr(id){document.getElementById(id).classList.remove('show');}
 function showErr(id,msg){const el=document.getElementById(id);if(msg)el.innerHTML='⚠️ '+msg;el.classList.add('show');}
 
-/* CARD FACTORY */
-function makeCard(cNum,mNum,tagCls,tagLbl,hlPos,isEntered){
+/* CARD FACTORY
+   matches: array of 1 or 2 ten-digit match numbers
+   name: optional string (customer's name) */
+function makeCard(cNum,matches,name,tagCls,tagLbl,hlPos,isEntered){
   const card=document.createElement('div');
   card.className='ncard'+(isEntered?' is-entered':'');
   let numHtml='';
   for(let i=0;i<cNum.length;i++)numHtml+=(i===hlPos)?`<span class="n-hl">${cNum[i]}</span>`:cNum[i];
-  const msg=buildMsg(cNum,mNum);
+  const msg=buildMsg(cNum,matches,name);
   const waLink=`https://wa.me/91${cNum}?text=${encodeURIComponent(msg)}`;
   const rcLink=`sms:+91${cNum}?body=${encodeURIComponent(msg)}`;
   const waClick=isEntered?`event.preventDefault();confirmSend(this,'${waLink}','wa');return false;`:`onSent(this)`;
   const rcClick=isEntered?`event.preventDefault();confirmSend(this,'${rcLink}','rcs');return false;`:`onSent(this)`;
+  const matchTxt=(matches&&matches.length)?matches.join(' & '):'';
+  const nameTag=(name&&name.trim())?`<span class="nname">👤 ${name.trim()}</span>`:'';
   card.innerHTML=`
     <div class="ninfo">
       <div class="num-val">${numHtml}</div>
       <div class="nmeta">
-        <span class="nmatch">↔ ${mNum}</span>
+        <span class="nmatch">↔ ${matchTxt}</span>
         <span class="ntag ${tagCls}">${tagLbl}</span>
+        ${nameTag}
       </div>
     </div>
     <div class="bgrp">
@@ -664,13 +700,17 @@ function doSingle(){
   const grid=document.getElementById('sGrid'),area=document.getElementById('sArea');
   clrErr('sErr');grid.innerHTML='';area.style.display='none';
   if(!/^\d{10}$/.test(val)){showErr('sErr');return;}
-  for(let i=0;i<=9;i++){const t=val.substring(0,9)+i;const isSame=(String(i)===val[9]);grid.appendChild(makeCard(t,val,isSame?'tag-same':'tag-match',isSame?'⭐ Entered':'✦ Match',9,isSame));}
+  for(let i=0;i<=9;i++){const t=val.substring(0,9)+i;const isSame=(String(i)===val[9]);grid.appendChild(makeCard(t,[val],'',isSame?'tag-same':'tag-match',isSame?'⭐ Entered':'✦ Match',9,isSame));}
   document.getElementById('sBadge').textContent='10 numbers';
   area.style.display='block';updStats(10,0,'Single · now');
   setTimeout(()=>{revealCards(grid);area.scrollIntoView({behavior:'smooth',block:'nearest'});},20);
 }
 
-/* BULK */
+/* BULK
+   Line format: Customer, Match1, [Match2 or Name], [Name]
+   - 2 columns: Customer, Match1
+   - 3 columns: Customer, Match1, X → X is a 10-digit number = 2nd match, otherwise it's the Name
+   - 4 columns: Customer, Match1, Match2, Name */
 function doBulk(){
   const text=document.getElementById('bulkIn').value.trim();
   const grid=document.getElementById('bGrid'),area=document.getElementById('bArea');
@@ -678,13 +718,28 @@ function doBulk(){
   if(!text){showErr('bErr','Input khali hai.');return;}
   let cnt=0;
   text.split('\n').forEach(line=>{
-    const pts=line.split(/[ ,]+/).map(p=>p.trim()).filter(Boolean);
-    if(pts.length>=2){
-      const c=pts[0].replace(/\D/g,''),m1=pts[1].replace(/\D/g,''),m2=pts[2]?pts[2].replace(/\D/g,''):'';
-      if(c.length===10&&m1.length===10){
-        grid.appendChild(makeCard(c,m1,'tag-bulk','📦 Bulk',-1,false));cnt++;
-        if(m2.length===10){grid.appendChild(makeCard(c,m2,'tag-bulk','📦 Bulk',-1,false));cnt++;}
+    if(!line.trim())return;
+    const pts=line.split(',').map(p=>p.trim()).filter(p=>p!=='');
+    if(pts.length<2)return;
+    const c=pts[0].replace(/\D/g,'');
+    const m1=pts[1].replace(/\D/g,'');
+    let m2='',name='';
+    if(pts.length===3){
+      const cleaned=pts[2].replace(/\D/g,'');
+      if(/^\d+$/.test(pts[2]) && cleaned.length===10){
+        m2=cleaned;
+      }else{
+        name=pts[2];
       }
+    }else if(pts.length>=4){
+      const cleaned2=pts[2].replace(/\D/g,'');
+      if(/^\d+$/.test(pts[2]) && cleaned2.length===10)m2=cleaned2;
+      name=pts[3];
+    }
+    if(c.length===10&&m1.length===10){
+      const matches=(m2&&m2.length===10)?[m1,m2]:[m1];
+      grid.appendChild(makeCard(c,matches,name,'tag-bulk','📦 Bulk',-1,false));
+      cnt++;
     }
   });
   if(!cnt){showErr('bErr','Koi valid pair nahi mila.');return;}
@@ -720,7 +775,7 @@ function selPos(pos,btn){
   for(let d=0;d<=9;d++){
     if(pos===0&&d<6)continue;
     const t=pre+d+suf,isEntered=(t===chkNum);
-    grid.appendChild(makeCard(t,chkNum,isEntered?'tag-same':'tag-pos',isEntered?'⭐ Entered':'✦ Match',pos,isEntered));
+    grid.appendChild(makeCard(t,[chkNum],'',isEntered?'tag-same':'tag-pos',isEntered?'⭐ Entered':'✦ Match',pos,isEntered));
     nums.push(t);
   }
   document.getElementById('cBadge').textContent=nums.length+' numbers';
@@ -760,7 +815,16 @@ function openEd(){
 function closeEd(){document.getElementById('edModal').classList.remove('show');document.getElementById('prevArea').classList.remove('show');document.getElementById('prevTog').classList.remove('open');}
 document.getElementById('edModal').addEventListener('click',function(e){if(e.target===this)closeEd();});
 function insPh(ph){const ta=document.getElementById('fmtArea'),s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.substring(0,s)+ph+ta.value.substring(en);ta.selectionStart=ta.selectionEnd=s+ph.length;ta.focus();updPrev();}
-function updPrev(){document.getElementById('prevArea').textContent=document.getElementById('fmtArea').value.replace(/\{custNum\}/g,'9876543210').replace(/\{matchNum\}/g,'9876543219');}
+function updPrev(){
+  /* Preview always shows the template filled with sample data (incl. 2nd match & name)
+     so the editor shows every line; the real message hides the {matchNum2} line
+     automatically when an entry has no 2nd match number. */
+  document.getElementById('prevArea').textContent=document.getElementById('fmtArea').value
+    .replace(/\{custNum\}/g,'9876543210')
+    .replace(/\{matchNum2\}/g,'9876543211')
+    .replace(/\{matchNum\}/g,'9876543219')
+    .replace(/\{name\}/g,'Ricky');
+}
 function togPrev(){const b=document.getElementById('prevArea'),t=document.getElementById('prevTog');updPrev();b.classList.toggle('show');t.classList.toggle('open');}
 function saveFmt(){
   const val=document.getElementById('fmtArea').value.trim();
